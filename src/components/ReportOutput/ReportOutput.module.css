@@ -1,0 +1,313 @@
+.container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* ─── Toolbar ────────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.toolbarLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toolbarIcon {
+  font-size: 18px;
+}
+
+.toolbarTitle {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--text);
+}
+
+.toolbarActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ─── Action Buttons ─────────────────────────────────────── */
+.actionBtn {
+  padding: 7px 14px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition),
+    background var(--transition);
+  white-space: nowrap;
+}
+
+.actionBtn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+/* ─── Report Body ────────────────────────────────────────── */
+.body {
+  padding: 40px 48px 56px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+
+/* ─── Typography inside report ───────────────────────────── */
+.body :global(h1) {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--accent);
+  margin-top: 0;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.body :global(h2) {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--text);
+  margin-top: 36px;
+  margin-bottom: 14px;
+  padding-top: 8px;
+}
+
+.body :global(h3) {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--text);
+  margin-top: 26px;
+  margin-bottom: 10px;
+}
+
+.body :global(h4) {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+.body :global(p) {
+  font-size: 14.5px;
+  color: #b8b8cc;
+  margin-bottom: 12px;
+  line-height: 1.8;
+}
+
+.body :global(strong) {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.body :global(em) {
+  font-style: italic;
+}
+
+.body :global(code) {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--accent2);
+}
+
+/* ─── Lists ──────────────────────────────────────────────── */
+.body :global(ul),
+.body :global(ol) {
+  padding-left: 22px;
+  margin-bottom: 14px;
+}
+
+.body :global(li) {
+  font-size: 14.5px;
+  color: #b8b8cc;
+  margin-bottom: 6px;
+  line-height: 1.7;
+}
+
+.body :global(li strong) {
+  color: var(--text);
+}
+
+/* ─── Blockquote / Citation ──────────────────────────────── */
+.body :global(blockquote) {
+  border-left: 3px solid var(--accent);
+  padding: 4px 0 4px 16px;
+  margin: 16px 0;
+}
+
+.body :global(blockquote p) {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 13.5px;
+}
+
+.body :global(.citation) {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  border-left: 3px solid var(--border-light);
+  padding-left: 14px;
+  margin-top: 32px;
+}
+
+/* ─── Horizontal Rule ────────────────────────────────────── */
+.body :global(hr) {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+
+/* ─── Tables ─────────────────────────────────────────────── */
+.body :global(.table-wrapper) {
+  overflow-x: auto;
+  margin: 16px 0 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.body :global(table) {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.body :global(thead) {
+  background: var(--surface2);
+}
+
+.body :global(th) {
+  padding: 11px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.body :global(td) {
+  padding: 11px 16px;
+  color: #b8b8cc;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.6;
+}
+
+.body :global(tr:last-child td) {
+  border-bottom: none;
+}
+
+.body :global(tr:nth-child(even) td) {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+/* ─── Severity Badges ────────────────────────────────────── */
+.body :global(.severity-badge) {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-xl);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.body :global(.severity-high) {
+  background: var(--danger-dim);
+  color: var(--danger);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+.body :global(.severity-medium) {
+  background: rgba(244, 162, 97, 0.1);
+  color: var(--accent2);
+  border: 1px solid rgba(244, 162, 97, 0.3);
+}
+
+.body :global(.severity-low) {
+  background: var(--success-dim);
+  color: var(--success);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+/* ─── Print Styles ───────────────────────────────────────── */
+@media print {
+  .toolbar {
+    display: none;
+  }
+
+  .container {
+    border: none;
+  }
+
+  .body {
+    padding: 20px 0;
+    color: #111;
+  }
+
+  .body :global(h1),
+  .body :global(h2),
+  .body :global(h3),
+  .body :global(h4) {
+    color: #111;
+  }
+
+  .body :global(p),
+  .body :global(li),
+  .body :global(td) {
+    color: #333;
+  }
+
+  .body :global(table),
+  .body :global(th),
+  .body :global(td) {
+    border-color: #ccc;
+  }
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .body {
+    padding: 28px 20px 40px;
+  }
+
+  .toolbar {
+    padding: 12px 16px;
+  }
+
+  .toolbarActions {
+    gap: 6px;
+  }
+
+  .actionBtn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}

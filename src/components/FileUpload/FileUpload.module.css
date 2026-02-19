@@ -1,0 +1,149 @@
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color var(--transition);
+}
+
+.card:hover {
+  border-color: var(--border-light);
+}
+
+/* ─── Card Top ───────────────────────────────────────────── */
+.cardTop {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--text);
+}
+
+/* ─── Drop Zone ──────────────────────────────────────────── */
+.dropZone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1.5px dashed var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--surface2);
+  padding: 28px 20px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color var(--transition), background var(--transition),
+    transform var(--transition);
+  outline: none;
+}
+
+.dropZone:hover,
+.dropZone:focus {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.dropZone.dragging {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  transform: scale(1.01);
+}
+
+.dropZone.hasFile {
+  border-style: solid;
+  border-color: rgba(74, 222, 128, 0.35);
+  background: rgba(74, 222, 128, 0.04);
+}
+
+/* ─── Drop Zone Content ──────────────────────────────────── */
+.dropIcon {
+  font-size: 28px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.dropPrimary {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.dropPrimary strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.dropSecondary {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ─── Hidden Input ───────────────────────────────────────── */
+.hiddenInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ─── Status Row ─────────────────────────────────────────── */
+.statusRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  background: var(--surface2);
+}
+
+.statusExtracting {
+  border-color: rgba(232, 197, 71, 0.3);
+  background: var(--accent-dim);
+  color: var(--accent);
+  animation: pulse 1.5s ease infinite;
+}
+
+.statusReady {
+  border-color: rgba(74, 222, 128, 0.3);
+  background: var(--success-dim);
+  color: var(--text-secondary);
+}
+
+/* ─── Spinner ────────────────────────────────────────────── */
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(232, 197, 71, 0.3);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ─── Checkmark ──────────────────────────────────────────── */
+.checkmark {
+  color: var(--success);
+  font-weight: 700;
+  flex-shrink: 0;
+}
