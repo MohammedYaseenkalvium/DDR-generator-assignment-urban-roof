@@ -80,13 +80,13 @@ export default function App() {
             <span className={styles.generateBtnIcon}>⚡</span>
             Generate DDR Report
           </button>
-          <button
+          {/* <button
             className={styles.sampleBtn}
             onClick={loadSampleData}
             disabled={status.type === 'loading'}
           >
             📂 Use Sample Data
-          </button>
+          </button> */}
         </section>
 
         {status.type && (

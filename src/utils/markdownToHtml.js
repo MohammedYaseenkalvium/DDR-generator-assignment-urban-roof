@@ -36,41 +36,46 @@ function applySeverityBadge(cellText) {
  */
 function convertTable(tableBlock) {
   const rows = tableBlock.trim().split('\n');
+
   if (rows.length < 2) return tableBlock;
+
+  const cleanRows = rows.filter(
+    (row) => !/^\|[\s\-|:]+\|$/.test(row.trim())
+  );
+
+  if (cleanRows.length < 2) return tableBlock;
 
   let html = '<div class="table-wrapper"><table>';
 
-  rows.forEach((row, index) => {
-    // Skip the separator row (e.g. | --- | --- |)
-    if (/^\|[\s\-|:]+\|$/.test(row.trim())) return;
+  // Header
+  const headerCells = cleanRows[0]
+    .split('|')
+    .map((c) => c.trim())
+    .filter(Boolean);
 
-    const cells = row
+  html += '<thead><tr>';
+  headerCells.forEach((cell) => {
+    html += `<th>${cell}</th>`;
+  });
+  html += '</tr></thead><tbody>';
+
+  // Body rows
+  for (let i = 1; i < cleanRows.length; i++) {
+    const cells = cleanRows[i]
       .split('|')
       .map((c) => c.trim())
-      .filter((c) => c !== '');
+      .filter(Boolean);
 
-    if (cells.length === 0) return;
-
-    if (index === 0) {
-      // Header row
-      html += '<thead><tr>';
-      cells.forEach((cell) => {
-        html += `<th>${cell}</th>`;
-      });
-      html += '</tr></thead><tbody>';
-    } else {
-      html += '<tr>';
-      cells.forEach((cell) => {
-        html += `<td>${applySeverityBadge(cell)}</td>`;
-      });
-      html += '</tr>';
-    }
-  });
+    html += '<tr>';
+    cells.forEach((cell) => {
+      html += `<td>${applySeverityBadge(cell)}</td>`;
+    });
+    html += '</tr>';
+  }
 
   html += '</tbody></table></div>';
   return html;
 }
-
 /**
  * Converts inline Markdown (bold, italic, inline code, links) within a string.
  *

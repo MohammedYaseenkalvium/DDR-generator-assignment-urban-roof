@@ -1,37 +1,16 @@
 /**
  * useReportGenerator.js
  *
- * Custom React hook that manages all state and logic for the DDR generator:
- * - API key input
- * - File uploads + PDF text extraction
- * - Gemini API call
- * - Status tracking
- * - Report output
+ * Improved version:
+ * - Extracted text stored in React state
+ * - Validation before Gemini call
+ * - No silent empty payloads
+ * - Safer architecture
  */
 
 import { useState, useCallback } from 'react';
 import { extractTextFromPDF } from '../services/pdfService.js';
 import { generateDDRReport } from '../services/geminiService.js';
-import { SAMPLE_INSPECTION_TEXT, SAMPLE_THERMAL_TEXT } from '../constants/sampleData.js';
-
-/**
- * @typedef {Object} FileState
- * @property {File|null} inspection          - Uploaded inspection PDF file.
- * @property {File|null} thermal             - Uploaded thermal images PDF file.
- * @property {number}    inspectionTextLength - Character count after extraction.
- * @property {number}    thermalTextLength    - Character count after extraction.
- */
-
-/**
- * @typedef {'idle'|'loading'|'success'|'error'} StatusType
- */
-
-/**
- * @typedef {Object} Status
- * @property {StatusType} type    - Current status type.
- * @property {string}     message - Human-readable message.
- * @property {string}     step    - Sub-step description for loading state.
- */
 
 const INITIAL_FILES = {
   inspection: null,
@@ -41,20 +20,13 @@ const INITIAL_FILES = {
 };
 
 const INITIAL_STATUS = {
-  type: '',     // '' means hidden
+  type: '',
   message: '',
   step: '',
 };
 
-// Internal store for extracted text (not kept in React state to avoid large re-renders)
-const extractedTexts = {
-  inspection: '',
-  thermal: '',
-};
-
 export function useReportGenerator() {
   const [apiKey, setApiKey] = useState(
-    // Pre-fill from .env if provided (optional)
     import.meta.env.VITE_GEMINI_API_KEY || ''
   );
 
@@ -62,11 +34,16 @@ export function useReportGenerator() {
   const [status, setStatus] = useState(INITIAL_STATUS);
   const [report, setReport] = useState('');
 
-  // ─── Handle file upload + extraction ──────────────────────
+  // ✅ Store extracted text in state (FIXED ARCHITECTURE)
+  const [inspectionText, setInspectionText] = useState('');
+  const [thermalText, setThermalText] = useState('');
+
+  // ─────────────────────────────────────────────
+  // Handle file upload + extraction
+  // ─────────────────────────────────────────────
   const handleFileChange = useCallback(async (type, file) => {
     if (!file) return;
 
-    // Mark file as selected immediately (shows file name in UI)
     setFiles((prev) => ({
       ...prev,
       [type]: file,
@@ -74,7 +51,12 @@ export function useReportGenerator() {
 
     try {
       const text = await extractTextFromPDF(file);
-      extractedTexts[type] = text;
+
+      if (type === 'inspection') {
+        setInspectionText(text);
+      } else {
+        setThermalText(text);
+      }
 
       setFiles((prev) => ({
         ...prev,
@@ -82,8 +64,13 @@ export function useReportGenerator() {
       }));
     } catch (err) {
       console.error(`PDF extraction failed for ${type}:`, err);
-      // Still keep the file reference; Gemini can still be called without text
-      extractedTexts[type] = '';
+
+      if (type === 'inspection') {
+        setInspectionText('');
+      } else {
+        setThermalText('');
+      }
+
       setFiles((prev) => ({
         ...prev,
         [`${type}TextLength`]: 0,
@@ -91,23 +78,24 @@ export function useReportGenerator() {
     }
   }, []);
 
-  // ─── Load pre-bundled sample data ─────────────────────────
+  // ─────────────────────────────────────────────
+  // Load sample data from public folder
+  // ─────────────────────────────────────────────
   const loadSampleData = useCallback(async () => {
     setStatus({
       type: 'loading',
       message: 'Loading sample documents...',
-      step: 'Fetching Sample Report.pdf and Thermal Images.pdf',
+      step: 'Fetching PDFs from public folder',
     });
 
     try {
-      // Fetch the files from the public folder
       const [inspectionRes, thermalRes] = await Promise.all([
         fetch('/Sample Report.pdf'),
         fetch('/Thermal Images.pdf'),
       ]);
 
       if (!inspectionRes.ok || !thermalRes.ok) {
-        throw new Error('Failed to fetch sample PDF files from the public folder.');
+        throw new Error('Failed to fetch sample PDF files.');
       }
 
       const [inspectionBlob, thermalBlob] = await Promise.all([
@@ -115,88 +103,122 @@ export function useReportGenerator() {
         thermalRes.blob(),
       ]);
 
-      const inspectionFile = new File([inspectionBlob], 'Sample Report.pdf', { type: 'application/pdf' });
-      const thermalFile = new File([thermalBlob], 'Thermal Images.pdf', { type: 'application/pdf' });
+      const inspectionFile = new File([inspectionBlob], 'Sample Report.pdf', {
+        type: 'application/pdf',
+      });
+
+      const thermalFile = new File([thermalBlob], 'Thermal Images.pdf', {
+        type: 'application/pdf',
+      });
 
       setStatus({
         type: 'loading',
         message: 'Extracting text from samples...',
-        step: 'Processing PDF content using pdf.js',
+        step: 'Processing PDF content',
       });
 
-      const [inspectionText, thermalText] = await Promise.all([
+      const [inspectionTextData, thermalTextData] = await Promise.all([
         extractTextFromPDF(inspectionFile),
         extractTextFromPDF(thermalFile),
       ]);
 
-      extractedTexts.inspection = inspectionText;
-      extractedTexts.thermal = thermalText;
+      // ✅ Store in state
+      setInspectionText(inspectionTextData);
+      setThermalText(thermalTextData);
 
       setFiles({
         inspection: inspectionFile,
         thermal: thermalFile,
-        inspectionTextLength: inspectionText.length,
-        thermalTextLength: thermalText.length,
+        inspectionTextLength: inspectionTextData.length,
+        thermalTextLength: thermalTextData.length,
       });
 
       setStatus({
         type: 'success',
-        message: 'Sample data loaded successfully from public folder.',
+        message: 'Sample data loaded successfully.',
         step: 'Click "Generate DDR Report" to continue.',
       });
+
       setReport('');
     } catch (err) {
       console.error('Failed to load sample data:', err);
       setStatus({
         type: 'error',
         message: `Failed to load sample data: ${err.message}`,
-        step: 'Please ensure Sample Report.pdf and Thermal Images.pdf exist in the public folder.',
+        step: 'Ensure sample PDFs exist in public folder.',
       });
     }
   }, []);
 
-
-  // ─── Generate report via Gemini ────────────────────────────
+  // ─────────────────────────────────────────────
+  // Generate DDR report via Gemini
+  // ─────────────────────────────────────────────
   const generateReport = useCallback(async () => {
     setReport('');
-    setStatus({ type: 'loading', message: 'Preparing documents…', step: 'Step 1 of 3 — Combining source data' });
+    setStatus({
+      type: 'loading',
+      message: 'Preparing documents…',
+      step: 'Step 1 of 3 — Validating input',
+    });
 
     try {
-      await new Promise((r) => setTimeout(r, 400)); // Small delay for UX
-      setStatus({ type: 'loading', message: 'Sending to Gemini AI…', step: 'Step 2 of 3 — AI analysis in progress' });
+      // ✅ VALIDATION (prevents "Not provided" bug)
+      if (!inspectionText.trim()) {
+        throw new Error(
+          'Inspection text is empty. Please upload or load sample data first.'
+        );
+      }
+
+      if (!thermalText.trim()) {
+        throw new Error(
+          'Thermal text is empty. Please upload or load sample data first.'
+        );
+      }
+
+      await new Promise((r) => setTimeout(r, 300));
+
+      setStatus({
+        type: 'loading',
+        message: 'Sending to Gemini AI…',
+        step: 'Step 2 of 3 — AI analysis in progress',
+      });
 
       const generatedMarkdown = await generateDDRReport(
         apiKey,
-        extractedTexts.inspection,
-        extractedTexts.thermal
+        inspectionText,
+        thermalText
       );
 
-      setStatus({ type: 'loading', message: 'Rendering report…', step: 'Step 3 of 3 — Formatting output' });
+      setStatus({
+        type: 'loading',
+        message: 'Rendering report…',
+        step: 'Step 3 of 3 — Formatting output',
+      });
+
       await new Promise((r) => setTimeout(r, 300));
 
       setReport(generatedMarkdown);
+
       setStatus({
         type: 'success',
         message: '✅ Report generated successfully!',
         step: 'Scroll down to view the full DDR report.',
       });
 
-      // Smooth scroll to report after short delay
       setTimeout(() => {
         document.getElementById('report-output')?.scrollIntoView({
           behavior: 'smooth',
           block: 'start',
         });
       }, 200);
-
     } catch (err) {
       setStatus({
         type: 'error',
         message: `Error: ${err.message}`,
-        step: 'Please check your API key and try again.',
+        step: 'Please resolve the issue and try again.',
       });
     }
-  }, [apiKey]);
+  }, [apiKey, inspectionText, thermalText]);
 
   return {
     apiKey,

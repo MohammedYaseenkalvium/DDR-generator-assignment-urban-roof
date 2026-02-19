@@ -74,13 +74,20 @@ For each main category of issue found, explain the most likely root cause in pla
 
 ## 4. Severity Assessment
 
-Create a table with the following columns:
-| Area | Observed Issue | Severity | Reasoning |
+Create a simple Markdown table with exactly four columns:
 
-Use these severity levels:
-- **High** — Requires immediate attention; structural risk, health hazard, or active water infiltration
-- **Medium** — Should be addressed within 1–3 months; progressing issue
-- **Low** — Monitor; cosmetic or slow-developing
+Area | Observed Issue | Severity | Reasoning
+
+Use this exact separator row format:
+
+|---|---|---|---|
+
+Rules:
+- Use exactly 3 dashes per column.
+- Do NOT extend dash separators.
+- Do NOT try to visually align columns using extra dashes.
+- Keep the table formatting minimal and clean.
+- Severity must be strictly one of: High, Medium, Low.
 
 ## 5. Recommended Actions
 
@@ -128,8 +135,8 @@ export async function generateDDRReport(apiKey, inspectionText, thermalText) {
       },
     ],
     generationConfig: {
-      temperature: 0.25,        // Low temperature for factual, structured output
-      maxOutputTokens: 4096,
+      temperature: 0.15,        // Low temperature for factual, structured output
+      maxOutputTokens: 8192,
       topP: 0.9,
     },
     safetySettings: [
@@ -168,6 +175,7 @@ export async function generateDDRReport(apiKey, inspectionText, thermalText) {
   const data = await response.json();
 
   const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
 
   if (!text) {
     const finishReason = data?.candidates?.[0]?.finishReason;
